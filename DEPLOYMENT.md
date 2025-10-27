@@ -5,7 +5,7 @@ Este documento describe los pasos necesarios para **configurar y desplegar** VM 
 1. [Entorno de trabajo](#entorno-de-trabajo)
 2. [Configuración de Proxmox](#configuración-de-proxmox)
 3. [Configuración de Guacamole](#configuración-de-guacamole)
-4. [Configuración de VNC] (#configuración-de-vnc)
+4. [Configuración de VNC](#configuración-de-vnc)
 5. [Configuración del servidor Flask](#configuración-del-servidor-flask)
 6. [Configuración de MySQL](#configuración-de-mysql)
 7. [Inicialización del sistema (usuario administrador)](#inicialización-del-sistema-usuario-administrador)
