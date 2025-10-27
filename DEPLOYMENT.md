@@ -5,9 +5,10 @@ Este documento describe los pasos necesarios para **configurar y desplegar** VM 
 1. [Entorno de trabajo](#entorno-de-trabajo)
 2. [Configuración de Proxmox](#configuración-de-proxmox)
 3. [Configuración de Guacamole](#configuración-de-guacamole)
-4. [Configuración del servidor Flask](#configuración-del-servidor-flask)
-5. [Configuración de MySQL](#configuración-de-mysql)
-6. [Inicialización del sistema (usuario administrador)](#inicialización-del-sistema-usuario-administrador)
+4. [Configuración de VNC] (#configuración-de-vnc)
+5. [Configuración del servidor Flask](#configuración-del-servidor-flask)
+6. [Configuración de MySQL](#configuración-de-mysql)
+7. [Inicialización del sistema (usuario administrador)](#inicialización-del-sistema-usuario-administrador)
 
 ## Entorno de trabajo
 
@@ -52,6 +53,109 @@ podman-compose up -d
 ```
 
 Tras esto, es posible que aparezca una nueva carpeta `/data` en la cual será necesario ejecutar `chcon` también.
+
+## Configuración de VNC
+
+Las conexiones con las máquinas virtuales a través de Apache Guacamole son realizadas usando VNC. En este apartado se muestran los pasos para instalar e iniciar un servidor VNC en la máquina virtual.
+
+### Instalación
+
+- Archlinux
+```bash
+sudo pacman -S tigervnc
+```
+
+- Debian
+```bash
+sudo apt install tightvncserver
+```
+
+### Credenciales de la conexión
+User: el mismo usuario que el de la máquina virtual.
+Password: la introducida al iniciar el servidor VNC por primera vez.
+
+### Configuración
+
+La configuración básica del servidor VNC es similar entre distribuciones; a continuación se presenta la guía utilizada en Debian como referencia.
+
+- [Guía seguida para Debian](https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-vnc-on-debian-10)
+
+Los pasos seguidos para inicializar el servidor VNC son los siguiente:
+
+- Establecer la contraseña
+```bash
+vncpasswd
+```
+
+En este caso, se ignora la contraseña de `view-only`.
+
+- Creación del archivo de configuración VNC
+```bash
+mkdir -p ~/.vnc
+touch ~/.vnc/xtartup 
+```
+
+Este archivo será el usado para iniciar la "vista" VNC y contiene la siguiente información:
+
+```bash
+#!/usr/bin/env sh
+
+unset SESSION_MANAGER
+unset DEBUS_SESSION_BUS_ADDRESS
+exec startlxqt & # Ajustar según el entorno que se use (GNOME, XFCE4, etc.)
+```
+
+- Dar permisos de ejecución al archivo
+
+```bash
+chmod +x ~/.vnc/xstartup
+```
+
+### Iniciar el servidor VNC
+
+Para iniciar el servidor VNC se ejecuta el siguiente comando:
+
+```bash
+vncserver :1 # El 1 representa el "display" a usar
+```
+
+> **Nota**: Cada display de VNC utiliza un puerto diferente: :1 -> 5901; :2 -> 5902, etc.
+
+### Servidor VNC como servicio de Systemd
+
+Para que el servidor VNC se inicie automáticamente al arrancar la máquina virtual, se puede crear un servicio de Systemd.
+
+Para ello, es necesario creará el archivo `vncserver@:X.service`, donde X indica el `display` que se usará.
+
+```bash
+sudo touch /etc/systemd/system/vncserver@:1.service
+```
+
+En el archivo se incluirá la siguiente información:
+
+```bash
+[Unit]
+Description=Start TigerVNC server at startup
+After=syslog.target network.target
+
+[Service]
+Type=forking
+User=[your_username]
+PAMName=login
+PIDFile=/home/[your_username]/.vnc/%H:%i.pid
+ExecStartPre=-/usr/bin/vncserver -kill :%i > /dev/null 2>&1
+ExecStart=/usr/bin/vncserver :%i -localhost no -geometry 1920x1080 -depth 24
+ExecStop=/usr/bin/vncserver -kill :%i
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Por último, se habilita e inicia el servicio para que SystemD lo gestione.
+
+```bash
+sudo systemctl enable vncserver@:1.service --now
+```
 
 ## Configuración del servidor Flask
 
