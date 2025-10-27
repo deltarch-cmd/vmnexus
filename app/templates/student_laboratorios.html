@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Laboratorios - VM Nexus{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/student_home_style.css') }}">
+
+{% endblock %}
+
+{% block content %}
+<h5><span class="student-nav-indicator">Asignaturas ({{ asignatura.nombre }})</span> >
+    <span class="current-view">Laboratorios</span></h5>
+<hr>
+
+{% if laboratorios %}
+<ul class="list-group">
+    {% for lab in laboratorios %}
+    <a class="text-decoration-none subject-item" href="{{ url_for('student_bp.lab_content', asignatura_id=asignatura['id'], laboratorio_id=lab['id']) }}">
+        <li class="list-group-item subject-group-item">
+            <span class="subject-name">{{ lab.nombre }}</span>
+        </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p class="">No se encontraron laboratorios</p>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}{% endblock %}

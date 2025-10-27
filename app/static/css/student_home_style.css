@@ -1,0 +1,24 @@
+.subject-item {
+    border-radius: 0.6rem;
+
+    margin-top: 0.1rem;
+    margin-bottom: 0.1rem;
+}
+
+.subject-group-item {
+    border-color: #112d4e;
+    border-width: 1px;
+
+    padding: 0.5rem 0.8rem;
+}
+
+.subject-group-item:hover {
+    background-color: #E0E5EC;
+    cursor: pointer;
+}
+
+.subject-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #112d4e;
+}

@@ -1,0 +1,45 @@
+version: '3'
+services:
+  guacd:
+    image: docker.io/guacamole/guacd
+    container_name: guacd
+    ports:
+      - "4822:4822"
+    restart: always
+
+  mysql:
+    image: docker.io/library/mysql:5.7
+    container_name: guacamole-db
+    environment:
+        MYSQL_ROOT_PASSWORD: root_password
+        MYSQL_DATABASE: guacamole_db
+        MYSQL_USER: guacamole_user
+        MYSQL_PASSWORD: guacamole_password
+    ports:
+      - "3306:3306"
+      - "33060:33060"
+    volumes:
+      - ./data:/var/lib/mysql
+    restart: always
+
+  guacamole:
+    image: docker.io/guacamole/guacamole
+    container_name: guacamole
+    environment:
+      GUACD_HOSTNAME: guacd  # Links the guacamole container to guacd by hostname
+      MYSQL_HOSTNAME: guacamole-db
+      MYSQL_DATABASE: guacamole_db
+      MYSQL_USER: guacamole_user
+      MYSQL_PASSWORD: guacamole_password
+    ports:
+      - "8080:8080"          # Maps Guacamole web interface to host's port 8080
+    depends_on:
+      - guacd
+      - mysql
+    restart: always
+    logging:
+      driver: json-file
+      options:
+        log-level: debug
+    volumes:
+      - ./guacamole.properties:/etc/guacamole/guacamole.properties:ro

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de Asignaturas - Custom Proxmox{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_gestion_asignaturas_style.css') }}">
+{% endblock %}
+
+{% block content %}
+<h3>Gestión de Asignaturas</h3>
+<hr>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a href="{{ url_for('admin_bp.crear_asignatura') }}" class="btn btn-primary">Crear Asignatura</a>
+</div>
+
+{% if asignaturas %}
+<div class="accordion" id="asignaturaAccordion">
+    <div class="row">
+        {% for asignatura in asignaturas %}
+        <div class="col-md-9">
+            <!-- Estructura de tabla con: desplegable que muestra los labs - botón editar asignatura - botón eliminar asignatura -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-{{ asignatura.id }}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ asignatura.id }}" aria-expanded="true" aria-controls="collapse-{{ asignatura.id }}">
+                        <span class="fw-bold">{{ asignatura.nombre }}</span>
+                    </button>
+                </h2>
+                <div id="collapse-{{ asignatura.id }}" class="accordion-collapse collapse" aria-labelledby="heading-{{ asignatura.id }}">
+                    <div class="accordion-body">
+                        <p>{{ asignatura.descripcion }}</p>
+                        <h5>Laboratorios</h5>
+                        <hr>
+                        <ol class="list-group list-group-flush list-group-numbered ordered-asignaturas">
+                            {% if asignatura.laboratorios %}
+                            {% for lab in asignatura.laboratorios %}
+                                <li class="list-group-item">{{ lab.nombre }}</li>
+                            {% endfor %}
+                            {% else %}
+                            <p class="">No se encontraron laboratorios</p>
+                            {% endif %}
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="action-buttons">
+                <a href="{{ url_for('admin_bp.editar_asignatura', id_asignatura=asignatura.id ) }}" class="btn btn-sm btn-outline-primary">Editar</a>
+                <a href="#" aria-label="Eliminar asignatura" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal-{{ asignatura.id }}" class="btn btn-sm btn-danger">Eliminar</a>
+            </div>
+        </div>
+
+        <!-- Modal de confirmación de eliminación de asignatura -->
+        <div class="modal fade" id="confirmDeleteModal-{{ asignatura.id }}" tabindex="-1" aria-labelledby="confirmDeleteModalLabel-{{ asignatura.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmDeleteModalLabel-{{ asignatura.id }}">Eliminar asignatura</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>¿Está seguro de que desea eliminar la asignatura <strong>{{ asignatura.nombre }}</strong>?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <a href="{{ url_for('admin_bp.borrar_asignatura', id_asignatura=asignatura.id) }}" class="btn btn-danger">Eliminar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% else %}
+<p class="">No se encontraron asignaturas</p>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}{% endblock %}

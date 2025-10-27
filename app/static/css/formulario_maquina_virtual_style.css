@@ -1,0 +1,56 @@
+.num-clones-input {
+    width: 10%;
+    margin: 6px 18px 6px 10px;
+}
+
+.single-clone-btn {
+    margin-top: 1em;
+}
+
+#clones-form {
+    margin-bottom: 1em;
+}
+
+#clone-button {
+    margin-top: 1em;
+}
+
+.clone-form > div {
+    margin-bottom: 1.5em;
+}
+.clone-from > label {
+    font-weight: 500;
+}
+
+.guac-connection > input {
+    border: 1px solid #dbe2ef;
+}
+
+/* Accordion styling */
+.accordion {
+    --bs-accordion-active-bg: #e8e8e8;
+}
+
+.accordion-button {
+    margin: 0;
+    padding: .4rem;
+    background-color: #fbfbfb;
+}
+
+.accordion-button:active {
+    background-color: #f0f0f0;
+    outline: none;
+    box-shadow: none;
+}
+
+.accordion-button:hover {
+    background-color: #f0f0f0;
+    outline: none;
+    box-shadow: none;
+}
+
+.accordion-button:focus {
+    background-color: #e8e8e8;
+    outline: none;
+    box-shadow: none;
+}

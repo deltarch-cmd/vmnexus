@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de Máquinas - Custom Proxmox{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_gestion_maquinas_style.css') }}">
+{% endblock %}
+
+{% block content %}
+<h3>Gestión de Máquinas Virtuales</h3>
+<hr>
+<div class="main-container">
+    <!-- Tabla con las máquinas registradas -->
+    <h4>Máquinas base registradas</h4>
+    <hr>
+    <table class="registered-vm-table table table-striped table-hover">
+        <thead>
+            <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">ID</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Uptime</th>
+                <th scope="col">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for registered_vm in registered_vms %}
+            <tr>
+                <td class="fw-bold">{{ registered_vm.name }}</td>
+                <td id="machine-id">{{ registered_vm.id }}</td>
+                <td>{{ registered_vm.status }}</td>
+                <td>{{ registered_vm.uptime // 60 }} minutos</td>
+                <td>
+                    <a href="{{ url_for('admin_bp.editar_maquina_virtual', proxmox_id=registered_vm.id) }}" class="btn btn-sm btn-primary">Editar</a>
+                    <a href="#" aria-label="Eliminar máquina" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal-{{ registered_vm.id }}" class="btn btn-sm btn-danger">Borrar</a>
+                </td>
+            </tr>
+
+            <!-- Modal de confirmación de eliminación de máquina -->
+            <div class="modal fade" id="confirmDeleteModal-{{ registered_vm.id }}" tabindex="-1" aria-labelledby="confirmDeleteModalLabel-{{ registered_vm.id }}" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="confirmDeleteModalLabel-{{ registered_vm.id }}">Borrar Máquina</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            ¿Está seguro de que desea eliminar la máquina virtual <span class="fw-bold">{{ registered_vm.name }}</span>?
+                            <br>
+                            <span class="fw-bold">Este cambio no afectará al servidor Proxmox</span>.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <a href="{{ url_for('admin_bp.dar_de_baja_maquina_virtual', proxmox_id=registered_vm.id)}}" class="btn btn-danger">Eliminar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <br>
+
+    <!-- Tabla de máquinas no registradas -->
+    <h4>Máquinas de Proxmox</h4>
+    <hr>
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">ID</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Uptime</th>
+                <th scope="col">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for unregistered_vm in unregistered_vms %}
+            <tr>
+                <td>{{ unregistered_vm.name }}</td>
+                <td>{{ unregistered_vm.id }}</td>
+                <td>{{ unregistered_vm.status }}</td>
+                <td>{{ unregistered_vm.uptime // 60 }} minutos</td>
+                <td>
+                    <!-- Registrar máquina. Se hace con modal que muestra un form para asociar la máquina a una asignatura -->
+                    <a href="#" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#registerVMModal-{{ unregistered_vm.id }}">Registrar</a>
+
+                    <!-- Modal de registro de máquina -->
+                    <div class="modal fade" id="registerVMModal-{{ unregistered_vm.id }}" tabindex="-1" aria-labelledby="registerVMModalLabel-{{ unregistered_vm.id }}" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Registrar Máquina</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form action="{{ url_for('admin_bp.registrar_maquina_virtual', proxmox_id=unregistered_vm.id)}}" method="POST">
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label for="vnc-username" class="form-label">Username VNC:</label>
+                                            <input type="text" class="form-control" id="vnc-username" name="vnc-username" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="vnc-password" class="form-label">Password VNC:</label>
+                                            <input type="password" class="form-control" id="vnc-password" name="vnc-password" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="vnc-repassword" class="form-label">Repetir Password VNC:</label>
+                                            <input type="password" class="form-control" id="vnc-repassword" name="vnc-repassword" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="asignatura" class="form-label">Seleccione la asignatura:</label>
+                                            <select class="form-select" id="asignatura" name="asignatura">
+                                                {% for asignatura in asignaturas %}
+                                                <option value="{{ asignatura.id }}">{{ asignatura.nombre }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <br>
+                                            <p class="fw-bold fs-6">Las máquinas registradas de esta forma se considerarán máquinas base.</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary">Registrar</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Eliminar máquina de Proxmox -->
+                    <a href="#" aria-label="Eliminar máquina" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal-{{ unregistered_vm.id }}" class="btn btn-sm btn-danger">Eliminar</a>
+
+                    <!-- Modal de confirmación de eliminación de máquina -->
+                    <div class="modal fade" id="confirmDeleteModal-{{ unregistered_vm.id }}" tabindex="-1" aria-labelledby="confirmDeleteModalLabel-{{ unregistered_vm.id }}" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="confirmDeleteModalLabel-{{ unregistered_vm.id }}">Eliminar Máquina</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    ¿Está seguro de que desea eliminar la máquina virtual <span class="fw-bold">{{ unregistered_vm.name }}</span>?
+                                    <br>
+                                    <span class="fw-bold">Este cambio afectará al servidor Proxmox</span>.
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <a href="{{ url_for('admin_bp.eliminar_maquina_virtual', proxmox_id=unregistered_vm.id)}}" class="btn btn-danger">Eliminar</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin_gestion_maquinas_script.js') }}"></script>
+{% endblock %}

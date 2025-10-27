@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Editar Máquina Virtual
+{% endblock %}
+
+{% block head %}
+<!-- Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<!-- Select2 -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/formulario_maquina_virtual_style.css') }}">
+{% endblock %}
+
+{% block content %}
+<h3>Editar Máquina Virtual</h3>
+<hr>
+<div class="main-container">
+    <h4>Datos máquina virtual</h4>
+    <hr>
+    <!-- List instead of inputs with the VM data -->
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+            <span class="fw-bold">Nombre: </span> {{ proxmox_vm.name }}
+        </li>
+        <li class="list-group-item">
+            <span class="fw-bold">ID Proxmox:</span> {{ proxmox_vm.id }}
+        </li>
+        <li class="list-group-item">
+            <span class="fw-bold">Uptime:</span> {{ proxmox_vm.uptime // 60 }} minutos
+        </li>
+        <li class="list-group-item">
+            <span class="fw-bold">Disco total:</span> {{ proxmox_vm.maxdisk }} GiB
+        </li>
+        <li class="list-group-item">
+            <span class="fw-bold">Memoria RAM:</span> {{ proxmox_vm.maxmem }} GiB
+        </li>
+        <li class="list-group-item">
+            <span class="fw-bold">Asignatura:</span> {{ asignatura_relacionada.nombre if asignatura_relacionada else "Ninguna asignatura asociada" }}
+        </li>
+        <li class="list-group-item">
+            <span class="fw-bold">Número de alumnos matriculados:</span> {{ alumnos|length }}
+        </li>
+    </ul>
+
+    <!-- Botón para clonar la máquina virtual -->
+    <div class="d-flex justify-content-end single-clone-btn">
+        <button type="button" class="btn btn-primary single-clone-btn" data-bs-toggle="modal" data-bs-target="#confirmSingleCloneModal">Clonar máquina</button>
+
+        <!-- Modal de confirmación de clonación de máquina (single) -->
+        <div class="modal fade" id="confirmSingleCloneModal" tabindex="-1" aria-labelledby="confirmCloneModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmCloneModalLabel">Clonar Máquina</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ url_for('admin_bp.clonar_maquina_virtual', proxmox_id=proxmox_vm.id) }}" method="POST">
+                        <div class="modal-body clone-form">
+                            <div class="form-group">
+                                <label for="cloned-id">ID de inicio (inclusive)</label>
+                                <input type="number" class="form-control" id="start-id" name="start-id" required placeholder="130" min="100">
+                            </div>
+                            <div class="form-group">
+                                <label for="num-clones">Número de clones a crear</label>
+                                <input type="number" class="form-control" id="num-clones" name="num-clones" required placeholder="1" min="1">
+                            </div>
+                            <div class="form-check guac-connection">
+                                <input class="form-check-input" type="checkbox" id="check-connections" name="check-connections">
+                                <label class="form-check-label guacamole-label" for="check-connections">Crear conexiones con Guacamole</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Clonar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <!-- Se muestran los datos de la máquina de forma informativa -->
+    <form action="{{ url_for('admin_bp.editar_maquina_virtual', proxmox_id=proxmox_vm.id) }}" method="POST" enctype="multipart/form-data" id="clones-form">
+        <h4>Clones de la máquina virtual</h4>
+        <hr>
+        <!-- Se muestran los clones de la máquina virtual en forma de tabla -->
+        <!-- Estos clones podrán ser borrados o asignados a un alumno de la lista de alumnos-->
+        <table class="registered-vm-table table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">ID</th>
+                    <th scope="col">Alumno asignado</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for clone in clones %}
+                <tr>
+                    <td class="fw-bold">{{ clone.nombre }}</td>
+                    <td id="machine-id">{{ clone.proxmox_id }}</td>
+                    <td>
+                        <select class="form-select student-select" name="clones[]" id="alumno-{{ clone.proxmox_id }}">
+                            <option value="{{ clone.proxmox_id }}:-1">Ningún alumno asignado</option>
+                            {% for alumno in alumnos %}
+                            <option value="{{ clone.proxmox_id }}:{{ alumno.id }}" {% if alumno.id == clone.user.id %}
+                                    selected
+                                {% endif %}>
+                                {{ alumno.nombre }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    <td>
+                        <a href="{{ url_for('admin_bp.test_guacamole_connection', proxmox_id=clone.proxmox_id) }}" class="btn btn-sm btn-primary">Guacamole</a>
+                        <a href="#" aria-label="Eliminar máquina" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal-100" class="btn btn-sm btn-danger">Borrar</a>
+                    </td>
+                </tr>
+                <!-- Modal de confirmación de eliminación de máquina -->
+                <div class="modal fade" id="confirmDeleteModal-100" tabindex="-1" aria-labelledby="confirmDeleteModalLabel-100" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="confirmDeleteModalLabel-100">Borrar Máquina</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <span>¿Está seguro de que desea borrar la máquina?</span>
+                                <br>
+                                <span class="fw-bold">Esta acción afectará al servidor de Proxmox.</span>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <a href="{{ url_for('admin_bp.eliminar_clon_maquina_virtual', proxmox_id=clone.proxmox_id) }}" class="btn btn-danger">Eliminar</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="mt-4 d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.student-select').select2({
+            placeholder: "Selecciona un alumno",
+            allowClear: false,
+            width: '100%'
+        });
+    });
+</script>
+<script src="{{ url_for('static', filename='js/formulario_maquina_virtual.js') }}"></script>
+{% endblock %}

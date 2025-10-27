@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %} {{ laboratorio.nombre }} - VM Nexus{% endblock %}
+
+{% block head %}
+<!-- Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/lab_content_style.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h5>
+        <span class="student-nav-indicator">Asignaturas ({{ asignatura.nombre }})</span> > <span class="student-nav-indicator">Laboratorios (<span class="current-view">{{ laboratorio.nombre }}</span>)
+    </h5>
+    <hr>
+
+    <!-- Tabs -->
+    <div class="tab">
+        <button class="tablinks" onclick="changeTab(event, 'Contenido')">
+            <i class="far fa-file-pdf"></i>
+            Contenido
+        </button>
+        <button class="tablinks" onclick="changeTab(event, 'Cliente')">
+            <i class="fas fa-desktop"></i>
+            Cliente
+        </button>
+    </div>
+</div>
+<div class="custom-container">
+    <!-- Tab content -->
+    <div id="Contenido" class="tabcontent">
+        <div class="pdf-viewer">
+            <object data="{{ pdf_url }}" type="application/pdf" width="100%" height="925px">
+                <p>El contenido no puede ser mostrado. Por favor, inténtelo de nuevo más tarde.</p>
+            </object>
+        </div>
+    </div>
+
+    <div id="Cliente" class="tabcontent">
+        <iframe id="guacamole-iframe" src="{{ guacamole_url }}" allow="fullscreen">
+            <p> Ha ocurrido un error al cargar el cliente de Guacamole. </p>
+        </iframe>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/tab_manager.js') }}"></script>
+<script src="{{ url_for('static', filename='js/iframe_focus.js') }}"></script>
+{% endblock %}

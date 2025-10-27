@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Home - VM Nexus{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/student_home_style.css') }}">
+
+{% endblock %}
+
+{% block content %}
+<h5 class="current-view">Asignaturas</h5>
+<hr>
+
+<!-- Hay que comprobar si el alumno tiene asignaturas -->
+{% if asignaturas %}
+<ul class="list-group">
+    {% for asig in asignaturas %}
+    <!-- Clickar en el enlace te debe llevar a su página de Lab con el ID de la asignatura y su nombre -->
+    <a class="text-decoration-none subject-item" href="{{ url_for('student_bp.labs_asignatura', asignatura_id=asig['id']) }}">
+        <li class="list-group-item subject-group-item">
+            <span class="subject-name">{{ asig.nombre }}: </span>
+            <span class="text-secondary">{{ asig.descripcion }}</span>
+        </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p class="">No tiene asignaturas asignadas</p>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}{% endblock %}

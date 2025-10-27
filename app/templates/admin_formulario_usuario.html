@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{% if edit_mode %}
+Editar Usuario
+{% else %}
+Crear Usuario
+{% endif %}
+{% endblock %}
+
+{% block head %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/formulario_usuario_style.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="main-container">
+    <h3>{{ 'Editar Usuario' if usuario else 'Crear Usuario'}}</h3>
+    <hr>
+    <form
+        action="{% if usuario %}{{ url_for('admin_bp.editar_usuario', id_usuario=usuario.id) }}{% else %}{{ url_for('admin_bp.crear_usuario') }}{% endif %}"
+        method="POST">
+        <div class="form-group form-outline mt-4 user-form">
+            <label for="nombre">Nombre completo</label>
+            <input type="text" class="form-control" id="nombre" name="nombre" value="{{ usuario.nombre if usuario}}">
+
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" name="email" value="{{ usuario.email if usuario}}">
+
+            {% if not usuario %}
+            <label for="password">Contraseña</label>
+            <input type="password" class="form-control" id="password" name="password"
+                value="{{ usuario.password if usuario}}">
+
+            <label for="password_confirm">Confirmar contraseña</label>
+            <input type="password" class="form-control" id="password_confirm" name="password_confirm"
+                value="{{ usuario.password if usuario}}">
+            {% endif %}
+
+            <label for="rol">Rol</label>
+            <select class="form-select" id="rol" name="rol">
+                <!-- Se selecciona alumno como rol por defecto -->
+                <option value="alumno" {% if usuario and usuario.is_admin==False %}selected{% endif %}>Alumno</option>
+                <option value="administrador" {% if usuario and usuario.is_admin==True %}selected{% endif %}>
+                    Administrador /
+                    Profesor</option>
+            </select>
+        </div>
+        <hr>
+        <div class="mt-4">
+            <div class="accordion accordion-flush" id="matriculasAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading-matriculas">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapse-matriculas" aria-expanded="true"
+                            aria-controls="collapse-matriculas">
+                            <h4>Matriculaciones</h4>
+                        </button>
+                    </h2>
+                    <div id="collapse-matriculas" class="accordion-collapse collapse"
+                        aria-labelledby="heading-matriculas">
+                        <div class="accordion-body row">
+                            <!-- Dropdown de asignaturas con buscador -->
+                            <div class="form-group col-md-3">
+                                <select class="form-control" id="asignatura" name="asignaturas[]" multiple>
+                                    {% for asignatura in asignaturas_no_matriculado %}
+                                    <option value="{{ asignatura.id }}">{{ asignatura.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div id="matriculas-container" class="col-md-9">
+                                <div class="matricula-entry">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Nombre</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% if asignaturas_matriculado %}
+                                            {% for matricula in asignaturas_matriculado %}
+                                            <tr data-id="{{ matricula.id }}">
+                                                <input type="hidden" name="asignaturas-ids[]"
+                                                    value="{{ matricula.id }}">
+                                                <td>
+                                                    <input type="text" class="form-control" name="matricula_nombre[]"
+                                                        value="{{ matricula.nombre }}" readonly>
+                                                </td>
+                                                <td>
+                                                    <button type="button"
+                                                        class="btn btn-danger btn-sm btn-remove-matricula">Eliminar</button>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                            {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4 d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary btn-lg">Guardar</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#asignatura').select2({
+            placeholder: "Select subjects",
+            width: '100%',
+            allowClear: true
+        });
+    });
+</script>
+<script src="{{ url_for('static', filename='js/usuario_gestion_matriculas.js') }}"></script>
+{% endblock %}

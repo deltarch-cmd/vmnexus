@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{% if asignatura %}
+Editar Asignatura
+{% else %}
+Crear Asignatura
+{% endif %}
+{% endblock %}
+
+{% block head %}
+<!-- Select2 -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/formulario_asignatura_style.css') }}">
+{% endblock %}
+
+{% block content %}
+<h3>{% if asignatura %}Editar Asignatura{% else %}Crear Asignatura{% endif %}</h3>
+<hr>
+<div class="main-container">
+    <h4>Datos asignatura</h4>
+    <form
+        action="{% if asignatura %}{{ url_for('admin_bp.editar_asignatura', id_asignatura=asignatura.id) }}{% else %}{{ url_for('admin_bp.crear_asignatura') }}{% endif %}"
+        method="POST" enctype="multipart/form-data">
+        <div class="form-group form-outline mt-4">
+            <label for="nombre">Nombre</label>
+            <input type="text" class="form-control" id="nombre" name="nombre"
+                value="{{ asignatura.nombre if asignatura}}" required>
+
+            <br>
+
+            <label for="descripcion">Descripción</label>
+            <textarea class="form-control" id="descripcion" name="descripcion"
+                rows="3">{{ asignatura.descripcion if asignatura }}</textarea>
+
+            <br>
+
+            <h5>Horarios de la asignatura</h5>
+            <hr>
+            <div id="horarios-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Día</th>
+                            <th>Hora inicio</th>
+                            <th>Hora fin</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for horario in horarios %}
+                        <tr>
+                            <input type="hidden" name="horario-ids[]" value="{{ horario.id }}">
+                            <td>
+                                <select class="form-select" name="dias[]">
+                                    <option value="">Seleccione un día</option>
+                                    <option value="mon" {% if horario.dia == 'mon' %}selected{% endif %}>Lunes</option>
+                                    <option value="tue" {% if horario.dia == 'tue' %}selected{% endif %}>Martes</option>
+                                    <option value="wed" {% if horario.dia == 'wed' %}selected{% endif %}>Miércoles</option>
+                                    <option value="thu" {% if horario.dia == 'thu' %}selected{% endif %}>Jueves</option>
+                                    <option value="fri" {% if horario.dia == 'fri' %}selected{% endif %}>Viernes</option>
+                                    <option value="sat" {% if horario.dia == 'sat' %}selected{% endif %}>Sábado</option>
+                                    <option value="sun" {% if horario.dia == 'sun' %}selected{% endif %}>Domingo</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="time" class="form-control" name="horas-inicio[]"
+                                    value="{{ horario.hora_inicio }}">
+                            </td>
+                            <td>
+                                <input type="time" class="form-control" name="horas-fin[]" value="{{ horario.hora_fin }}">
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-outline-danger btn-sm btn-remove-horario">Eliminar</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="form-group form-outline mt-4 d-flex justify-content-end">
+                    <button type="button" class="btn btn-outline-primary" id="btn-add-horario">Añadir horario</button>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4">
+            <div class="accordion accordion-flush" id="laboratoriosAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading-labs">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapse-labs" aria-expanded="true" aria-controls="collapse-labs">
+                            <h4>Laboratorios</h4>
+                        </button>
+                    </h2>
+                    <div id="collapse-labs" class="accordion-collapse collapse show" aria-labelledby="heading-labs">
+                        <div class="accordion-body">
+                            <div id="labs-container">
+                                <div class="lab-entry">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Nombre</th>
+                                                <th>Archivo</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% if asignatura and asignatura.laboratorios %}
+                                            {% for lab in asignatura.laboratorios %}
+                                            <tr>
+                                                <input type="hidden" name="lab-ids[]" value="{{ lab.id }}">
+                                                <td>
+                                                    <input type="text" class="form-control" name="labs[]"
+                                                        value="{{ lab.nombre }}">
+                                                </td>
+                                                <td class="input-group">
+                                                    <input type="text" class="form-control" style="width: 60%;"
+                                                        name="lab-file-names[]" readonly
+                                                        value="{{ lab.pdf_url if lab.pdf_url else 'Ningún archivo seleccionado' }}">
+                                                    <input type="file" class="inputfile" id="file-{{ loop.index }}"
+                                                        name="lab-files[]" accept=".pdf">
+                                                    <label
+                                                        class="d-flex align-items-center justify-content-center text-center"
+                                                        for="file-{{ loop.index }}" style="width: 30%;">Seleccione un
+                                                        archivo</label>
+                                                </td>
+                                                <td>
+                                                    <button type="button"
+                                                        class="btn btn-outline-danger btn-sm btn-remove-lab">Eliminar</button>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                            {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="form-group form-outline mt-4 d-flex justify-content-end">
+                                    <button type="button" class="btn btn-outline-primary" id="btn-add-lab">Añadir laboratorio</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="mt-4">
+            <div class="accordion accordion-flush" id="matriculasAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading-matriculas">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapse-matriculas" aria-expanded="true"
+                            aria-controls="collapse-matriculas">
+                            <h4>Matriculaciones</h4>
+                        </button>
+                    </h2>
+                    <div id="collapse-matriculas" class="accordion-collapse collapse"
+                        aria-labelledby="heading-matriculas">
+                        <div class="accordion-body row">
+                            <!-- Dropdown de alumnos con buscador -->
+                            <div class="form-group col-md-3">
+                                <!-- <label for="alumno">Alumno</label> -->
+                                <select class="form-control" id="alumno" name="alumnos[]" multiple>
+                                    {% for alumno in alumnos_no_matriculados %}
+                                    <option value="{{ alumno.id }}">{{ alumno.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div id="matriculas-container" class="col-md-9">
+                                <div class="matricula-entry">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Nombre</th>
+                                                <!-- <th>Correo</th> -->
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% if alumnos_matriculados %}
+                                            {% for matricula in alumnos_matriculados %}
+                                            <tr data-id="{{ matricula.id }}">
+                                                <input type="hidden" name="alumnos-ids[]" value="{{ matricula.id }}">
+                                                <td>
+                                                    <input type="text" class="form-control" name="matricula_nombre[]"
+                                                        value="{{ matricula.nombre }}" readonly>
+                                                </td>
+                                                <!-- <td>
+                                                    <input type="text" class="form-control" name="matricula_correo[]"
+                                                        readonly value="{{ matricula.email }}">
+                                                </td> -->
+                                                <td>
+                                                    <button type="button"
+                                                        class="btn btn-outline-danger btn-sm btn-remove-matricula">Eliminar</button>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                            {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4 d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary btn-lg">Guardar</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/formulario_asignaturas.js') }}"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#alumno').select2({
+            placeholder: "Select students",
+            allowClear: true
+        });
+    });
+</script>
+<script src="{{ url_for('static', filename='js/asignatura_gestion_matriculas.js') }}"></script>
+{% endblock %}

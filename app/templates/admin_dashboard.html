@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - VM Nexus{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard_style.css') }}">
+<!-- FontAwesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<h1 class="text-center my-4 fw-bold">VM Nexus Dashboard</h1>
+<hr class="mb-5">
+
+<!-- Estado de servidores -->
+<div class="container mb-4">
+    <div class="row g-3">
+        <!-- Proxmox -->
+        <div class="col-md-6">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <span class="logo-space">
+                        <img src="{{ url_for('static', filename='images/proxmox-logo.png') }}" alt="Proxmox" class="img-fluid mb-3 proxmox-icon">
+                    </span>
+                    <!--<i class="fas fa-server fa-3x text-primary mb-3"></i>-->
+                    <h5 class="card-title server-title">Proxmox</h5>
+                    <hr>
+                    <div class="d-flex justify-content-center">
+                        <p><span class="fw-bold">Estado</span>: 
+                            {% if proxmox_connected %}
+                            <span class="text-success fw-bold">
+                                Activo
+                                <i class="fas fa-check"></i>
+                            </span>
+                            {% else %}
+                            <span class="text-danger fw-bold">
+                                Inactivo
+                                <i class="fas fa-times"></i>
+                            </span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Guacamole -->
+        <div class="col-md-6">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <span class="logo-space">
+                        <img src="{{ url_for('static', filename='images/guacamole-icon.png') }}" alt="Guacamole" class="img-fluid mb-3 guacamole-icon">
+                    </span>
+                    <h5 class="card-title server-title">Guacamole</h5>
+                    <hr>
+                    <p><span class="fw-bold">Estado</span>: 
+                        {% if guacamole_connected %}
+                        <span class="text-success fw-bold">
+                            Activo
+                            <i class="fas fa-check"></i>
+                        </span>
+                        {% else %}
+                        <span class="text-danger fw-bold">
+                            Inactivo
+                            <i class="fas fa-times"></i>
+                        </span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Botones de gestión -->
+<div class="container">
+    <div class="row g-4">
+
+        <!-- Gestionar usuarios -->
+        <div class="col-md-4">
+            <div class="card card-custom text-center shadow-sm">
+                <a href="{{ url_for('admin_bp.gestion_usuarios') }}" class="btn btn-outline-primary">
+                    <div class="card-body">
+                        <i class="fas fa-user fa-3x mb-3"></i>
+                        <h5 class="card-title">Gestionar Usuarios</h5>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Gestionar asignaturas -->
+        <div class="col-md-4">
+            <div class="card card-custom text-center shadow-sm">
+                <a href="{{ url_for('admin_bp.gestion_asignaturas') }}" class="btn btn-outline-primary">
+                    <div class="card-body">
+                        <i class="fas fa-book fa-3x mb-3"></i>
+                        <h5 class="card-title">Gestionar Asignaturas</h5>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Gestionar VMs -->
+        <div class="col-md-4">
+            <div class="card card-custom text-center shadow-sm">
+                <a href="{{ url_for('admin_bp.gestion_maquinas') }}" class="btn btn-outline-primary">
+                    <div class="card-body">
+                        <i class="fas fa-server fa-3x mb-3"></i>
+                        <h5 class="card-title">Gestionar VMs</h5>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,36 @@
+/* Removes the default file input */
+.inputfile {
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+}
+
+.inputfile + label {
+    font-size: 1em;
+    font-weight: 700;
+    color: #f9f7f7;
+    background-color: #3f72af;
+    /* display: inline-block; */
+}
+
+.inputfile:focus + label,
+.inputfile + label:hover {
+    background-color: #112d4e;
+}
+
+.matricula {
+    margin-top: 1em;
+}
+
+.select2-container .select2-selection--placeholder {
+    text-align: center;
+}
+
+.select2-container--default .select2-selection--single {
+    height: 38px; /* Match Bootstrap's form-control height */
+    display: flex;
+    align-items: center;
+}

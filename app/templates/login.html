@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - VM Nexus{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}" />
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+    <div class="main-card">
+        <h2 class="text-center">Inicio de sesión</h2>
+        <form method="POST" action="{{ url_for('main_bp.login') }}">
+            <div class="form-box mb-3">
+                <label for="username" class="form-label">Nombre usuario</label>
+                <input type="text" class="form-control" id="username" name="username"
+                    placeholder="usuario[@email]" required>
+            </div>
+            <div class="form-box mb-3">
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="button-custom btn btn-primary w-100">Iniciar sesión</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

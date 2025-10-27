@@ -1,0 +1,63 @@
+h4 {
+    /*font-size: 1.5rem;*/
+    font-weight: bold;
+}
+
+/* Estilos generales */
+.card {
+    border-radius: 10px;
+}
+
+.card-custom {
+    margin: 0px 1.2rem;
+}
+
+.card-custom > a {
+    text-decoration: none;
+    color: #213555;
+    border: 0.5px solid #ccc;
+}
+.card-custom > a:hover {
+    text-decoration: none;
+    background-color: #f5efe7;
+    color: #213555;
+}
+.btn-outline-primary:active:focus,
+.btn:active:focus {
+    text-decoration: none;
+    background-color: #d8c4b6;
+    color: #213555;
+    transition: 0.2s;
+}
+
+/* Iconos */
+.card i {
+    color: #213555; /* O el color que prefieras */
+}
+
+.proxmox-icon, .guacamole-icon {
+    width: 120px;
+    height: auto;
+}
+
+/* The idea is to force both spaces to be the same size */
+.logo-space {
+    width: 100%;
+    height: 100px;
+}
+
+/* Títulos */
+.card-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.server-title {
+    font-size: 1.8rem;
+}
+
+/* Botones */
+.btn-outline-primary {
+    border-radius: 5px;
+    font-weight: 500;
+}

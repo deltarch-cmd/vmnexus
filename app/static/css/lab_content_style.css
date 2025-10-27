@@ -1,0 +1,62 @@
+/* Se anula el estilo de la plantilla */
+.container:has(.custom-container) {
+    all: unset;
+}
+
+/* Style the tab */
+.tab {
+    overflow: hidden;
+    border: none;
+    background-color: none;
+    /*background-color: #f1f1f1;*/
+    margin: 0.1em 0em;
+}
+
+/* Style the buttons that are used to open the tab content */
+.tab button {
+    /*background-color: inherit;*/
+    background-color: #f1f1f1;
+    float: left;
+
+    border: 1px solid #213555;
+    border-radius: 6px;
+    outline: none;
+
+    cursor: pointer;
+
+    padding: 6px 16px;
+    margin: 2px;
+    transition: 0.3s;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+    /*background-color: #d8c4b6;*/
+    background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+    color: #f5efe7;
+    background-color: #3e5879;
+}
+
+/* Style the tab content */
+.tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border-top: none;
+    margin-bottom: 1em;
+}
+
+iframe {
+    width: 100%;
+    height: 90vh;
+    border: none;
+}
+
+/* Hay que hacer que el cliente tenga más espacio a los laterales */
+#Cliente.tabcontent {
+    margin: 0 auto;
+    max-width: 100%;
+}

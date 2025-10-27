@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de Usuarios - Custom Proxmox{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_gestion_usuarios_style.css') }}">
+{% endblock %}
+
+{% block content %}
+<h3>Gestión de Usuarios</h3>
+<hr>
+<div class="main-container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <a href="{{ url_for('admin_bp.crear_usuario') }}" class="btn btn-primary">Crear Usuario</a>
+        <!-- Buscador de usuarios -->
+        <div class="d-flex">
+            <input id="search-input" class="form-control me-2" type="search" placeholder="Buscar usuarios" aria-label="Search" name="search">
+        </div>
+    </div>
+
+    {% if usuarios %}
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">Correo</th>
+                <th scope="col">Rol</th>
+                <th scope="col">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for usuario in usuarios %}
+            <tr>
+                <td class="user-name">{{ usuario.nombre }}</td>
+                <td class="user-email">{{ usuario.email }}</td>
+                <td class="user-role">
+                    {% if usuario.is_admin %}
+                    Administrador
+                    {% else %}
+                    Alumno
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ url_for('admin_bp.editar_usuario', id_usuario=usuario.id) }}"
+                        class="btn btn-sm btn-outline-primary">Editar</a>
+                    <a href="#" aria-label="Eliminar usuario" data-bs-toggle="modal"
+                        data-bs-target="#confirmDeleteModal-{{ usuario.id }}" class="btn btn-sm btn-danger">Eliminar</a>
+                </td>
+            </tr>
+
+            <!-- Modal de confirmación de eliminación de usuario -->
+            <div class="modal fade" id="confirmDeleteModal-{{ usuario.id }}" tabindex="-1"
+                aria-labelledby="confirmDeleteModalLabel-{{ usuario.id }}" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="confirmDeleteModalLabel-{{ usuario.id }}">Eliminar usuario</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>¿Está seguro de que desea eliminar el usuario <strong>{{ usuario.nombre }}</strong>?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <a href="{{ url_for('admin_bp.borrar_usuario', id_usuario=usuario.id) }}"
+                                class="btn btn-danger">Eliminar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No se encontraron usuarios</p>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/gestion_usuarios_script.js') }}"></script>
+{% endblock %}

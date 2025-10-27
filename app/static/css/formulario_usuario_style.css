@@ -1,0 +1,53 @@
+.main-container {
+    margin: 0em 4em;
+}
+
+.accordion {
+    --bs-accordion-active-bg: #e8e8e8;
+}
+
+.accordion-button {
+    margin: 0;
+    padding: .4rem;
+    background-color: #fbfbfb;
+}
+
+.accordion-button:active {
+    background-color: #f0f0f0;
+    outline: none;
+    box-shadow: none;
+}
+
+.accordion-button:hover {
+    background-color: #f0f0f0;
+    outline: none;
+    box-shadow: none;
+}
+
+.accordion-button:focus {
+    background-color: #e8e8e8;
+    outline: none;
+    box-shadow: none;
+}
+
+/* Removes the default file input */
+.inputfile {
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+}
+
+.inputfile + label {
+    font-weight: 600;
+    color: #f9f7f7;
+    background-color: #3f72af;
+    /* display: inline-block; */
+}
+
+.inputfile:focus + label,
+.inputfile + label:hover {
+    background-color: #112d4e;
+}

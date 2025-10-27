@@ -1,0 +1,42 @@
+# Ignore compiled Python files
+__pycache__/
+*.pyc
+
+# Ignore environment configurations
+.env
+.env.uni
+.venv/
+venv/
+depen_proxmox/
+
+users.json
+
+# Ignore uploads folder
+flask_uploads/
+flask_uploads/*
+
+# Ignore Docker-related data for Guacamole
+guacamole/data/
+
+# Ignore sensitive data files
+app/configUni.py
+
+# Ignore any keys or certificates
+guacamole/data/*.pem
+guacamole/data/*.cnf
+
+# Ignore large database files
+guacamole/data/*.ib*
+guacamole/data/mysql/
+guacamole/data/guacamole_db/
+guacamole/data/performance_schema/
+guacamole/data/sys/
+
+# Ignore local SQLite databases (adjust if using this type of database)
+# *.sqlite3
+# *.db
+
+# Ignore temporary files
+*.log
+*.tmp
+*.bak

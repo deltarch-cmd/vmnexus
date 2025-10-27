@@ -1,0 +1,105 @@
+html, body {
+    /* font-family: Arial, sans-serif; */
+    background-color: #f9f7f7;
+    height: 100%;
+    margin: 0;
+}
+
+.navbar {
+    background-color: #213555;
+}
+
+.footer {
+    text-align: center;
+    padding: 10px;
+
+    width: 100%;
+    height: 6%;
+
+    background-color: #213555;
+}
+
+.navbar-brand, .footer {
+    color: #d8c4b6;
+}
+
+.navbar-header .navbar-brand:hover,
+.nav-item .navbar-brand:hover,
+.nav-item .navbar-brand:focus {
+    color: #f5efe7;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.card-header {
+    background-color: #3e5879;
+    color: #f5efe7;
+}
+
+/* Default button color modifications */
+.btn-outline-primary {
+    border-color: #3e5879;
+    color: #3e5879;
+}
+
+.btn-outline-success {
+    border-color: #4caf50;
+    color: #4caf50;
+}
+
+.btn-outline-danger {
+    border-color: #e57373;
+    color: #e57373;
+}
+
+.btn-primary {
+    background-color: #213555;
+    border-color: #3e5879;
+    color: #f5efe7;
+}
+
+.btn-success {
+    background-color: #5aa469;
+    border-color: #5aa469;
+    color: #f5efe7;
+}
+
+.btn-danger {
+    background-color: #d43f3a;
+    border-color: #C01E1B;
+    color: #f5efe7;
+}
+
+/* Button hover color modifications */
+.btn-danger:hover,
+.btn-outline-danger:hover {
+    background-color: #C01E1B;
+    border-color: #d43f3a;
+    color: #e0e5ec;
+}
+
+.btn-success:hover,
+.btn-outline-success:hover {
+    background-color: #4caf50;
+    border-color: #4caf50;
+    color: #f5efe7;
+}
+
+.btn-primary:hover,
+.btn-outline-primary:hover {
+    background-color: #3e5879;
+    border-color: #3e5879;
+    color: #f5efe7;
+}
+
+.student-nav-indicator {
+    /*color: #d8c4b6;*/
+    color: #213555;
+}
+
+.current-view {
+    color: #3e5879;
+    /*color: #64b5f6;*/
+    /*color: #213555;*/
+    font-weight: bold;
+}

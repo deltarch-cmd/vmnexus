@@ -1,0 +1,40 @@
+html, body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f7f7;
+    height: 100%;
+    margin: 0;
+}
+
+h2 {
+    font-weight: bolder;
+    margin: 0.8rem;
+    margin-bottom: 1.5rem;
+    color: #112d4e;
+}
+
+.main-card {
+    max-width: 500px;
+    min-width: 500px;
+    padding: 12px;
+    margin-top: 3rem;
+    border-radius: 12px;
+    background-color: #dbe2ef;
+}
+
+.form-box {
+    margin: 1rem;
+    padding-bottom: 1rem;
+}
+
+.form-box > label {
+    font-weight: bold;
+    color: #112d4e;
+}
+
+.button-custom {
+    max-width: 80%;
+
+    border: none;
+    background-color: #3f72af;
+    color: #f9f7f7
+}
